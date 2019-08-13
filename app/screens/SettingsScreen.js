@@ -9,7 +9,7 @@ import {
   Picker
 } from "react-native";
 import * as Speech from "expo-speech";
-import { LinearGradient } from "expo";
+import { LinearGradient } from "expo-linear-gradient";
 import { AsyncStorage } from "react-native";
 import { gradient } from '../utils/Colours';
 
