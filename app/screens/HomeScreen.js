@@ -4,20 +4,18 @@ import {
   Text,
   View,
   ActivityIndicator,
-  Image,
-  Button
+  Button, 
+  AsyncStorage
 } from "react-native";
 import * as Speech from "expo-speech";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
-import { LinearGradient } from "expo";
+import { LinearGradient } from "expo-linear-gradient";
 import { Weather } from "../components/Weather";
-import { AsyncStorage } from "react-native";
 import TravelTime from "../components/TravelTime.js";
 import CalendarPull from "../components/Calendar.js";
 import { APP_ID } from "react-native-dotenv";
 import weatherScript from "../utils/WeatherScript";
-import { journeyTime } from "../components/TravelTime.js";
 import { gradient } from '../utils/Colours';
 
 export default class HomeScreen extends React.Component {
@@ -38,6 +36,7 @@ export default class HomeScreen extends React.Component {
       destination: '',
       name: '',
     };
+    console.log('[HOMESCREEN] constructor')
   }
 
   _getSettings = async () => {
@@ -46,20 +45,19 @@ export default class HomeScreen extends React.Component {
       AsyncStorage.multiGet(keys, (err, stores) => {
         var array = [];
         stores.map((result, i, store) => {
-          let key = store[i][0];
           let value = store[i][1];
           array.push(value);
         });
-        this.setState({ name: array[0] });
-        this.setState({ destination: array[1] });
-        this.setState({ speechRate: array[2] });
+        this.setState({ name: array[0], destination: array[1], speechRate: array[2] });
       }).then(() => {
         this.setState({ isLoadingSettings: false });
       });
     });
+    console.log('[HOMESCREEN] _getSettings')
   };
 
   _getLocationAsync = async () => {
+    console.log('[HOMESCREEN] _getLocationAsync')
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
       console.log("DENIED");
@@ -71,11 +69,12 @@ export default class HomeScreen extends React.Component {
 
     this.setState({ latitude, longitude });
   };
-
+  
   fetchWeather(lat, lon) {
+    console.log('[HOMESCREEN] fetchWeather')
     fetch(
       `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&APPID=${APP_ID}`
-    )
+      )
       .then(response => response.json())
       .then(responseJson => {
         this.setState({
@@ -86,21 +85,24 @@ export default class HomeScreen extends React.Component {
       .catch(error => {
         console.log(error);
       });
-  }
-
-  storeTravelTime(travelTime) {
+    }
+    
+    storeTravelTime(travelTime) {
+    console.log('[HOMESCREEN] storeTravelTime')
     this.setState({
       travelTime
     });
   }
-
+  
   storeEventDetails(eventDetails) {
+    console.log('[HOMESCREEN] storeEventDetails')
     this.setState({
       eventDetails
     });
   }
-
+  
   generateWeatherReport = () => {
+    console.log('[HOMESCREEN] generateWeatherReport')
     weatherReport = "";
     allWeather = [];
     allTemp = [];
@@ -151,7 +153,7 @@ export default class HomeScreen extends React.Component {
         this.state.eventDetails.eventLocation},`;
       weatherReport += `It starts at ${this.state.eventDetails &&
         this.state.eventDetails.eventStartTime}, and finishes at
-     ${this.state.eventDetails && this.state.eventDetails.eventEndTime}`;
+      ${this.state.eventDetails && this.state.eventDetails.eventEndTime}`;
     } else {
       weatherReport += `You have no appointments in your calendar`;
     }
@@ -164,9 +166,11 @@ export default class HomeScreen extends React.Component {
         this.fetchWeather(this.state.latitude, this.state.longitude);
       });
     });
+    console.log('[HOMESCREEN] didMount')
   }
 
   render() {
+    console.log('[HOMESCREEN] rendering...')
     let date = Date(Date.now().toString()).substring(0, 16);
     if (this.state.isLoadingSettings) {
       return (

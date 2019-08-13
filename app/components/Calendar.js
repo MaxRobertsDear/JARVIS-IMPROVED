@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import * as Expo from "expo";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default class CalendarPull extends Component {
   constructor() {
